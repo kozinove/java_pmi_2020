@@ -4,7 +4,7 @@ import java.util.*;
 
 public class OneByOneServer
 {
-    ArrayList<PrintWriter> clientOutputStreams;
+    ArrayList<PrintWriter> clientOutputStreams = new ArrayList<PrintWriter>();
     
     public class MessageReceiver{
         BufferedReader reader1;
@@ -33,14 +33,14 @@ public class OneByOneServer
                         while ((message = reader1.readLine()) == null) {
                             continue;
                         }
-                        broadCast(message);
+                        printLastMessage(message);
                         phase = 1;
                     }
                     else{
                         while ((message = reader2.readLine()) == null) {
                             continue;
                         }
-                        broadCast("\t\t" + message);
+                        printLastMessage("\t\t" + message);
                         phase = 0;
                     }
                 }
@@ -54,7 +54,6 @@ public class OneByOneServer
     }
     
     public void go() {
-        clientOutputStreams = new ArrayList<PrintWriter>();
         try {
             ServerSocket serverSock = new ServerSocket(5000);
 
@@ -73,7 +72,7 @@ public class OneByOneServer
         } catch (Exception ex) { ex.printStackTrace(); }
     }
     
-    public void broadCast(String message) {
+    public void printLastMessage(String message) {
         Iterator it = clientOutputStreams.iterator();
         while (it.hasNext()) {
             try {
