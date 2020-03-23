@@ -6,6 +6,7 @@ public class OneByOneServer
 {
     ArrayList<PrintWriter> clientOutputStreams = new ArrayList<PrintWriter>();
     int phase = 0;
+    boolean stop = false;
     
     public class MessageReceiver{
         BufferedReader reader1;
@@ -28,10 +29,13 @@ public class OneByOneServer
         public void doIt() {
             String message;
             try {
-                while(true){
+                while(!stop){
                     if(phase == 0){
                         while ((message = reader1.readLine()) == null) {
                             continue;
+                        }
+                        if(message.equals("stop")){
+                            stopMessage();
                         }
                         printLastMessage("\t\t" + message);
                         phase = 1;
@@ -39,6 +43,9 @@ public class OneByOneServer
                     else{
                         while ((message = reader2.readLine()) == null) {
                             continue;
+                        }
+                        if(message.equals("stop")){
+                            stopMessage();
                         }
                         printLastMessage("\t\t" + message);
                         phase = 0;
@@ -71,6 +78,7 @@ public class OneByOneServer
             
             MessageReceiver mr = new MessageReceiver(clientSocket, clientSocket2);
             mr.doIt();
+            serverSock.close();
         } catch (Exception ex) { ex.printStackTrace(); }
     }
     
@@ -78,5 +86,16 @@ public class OneByOneServer
         PrintWriter writer = (PrintWriter)(clientOutputStreams.get((phase == 0 ? 1 : 0)));
         writer.println(message);
         writer.flush();
+    }
+    private void stopMessage(){
+        stop = true;
+        Iterator it = clientOutputStreams.iterator();
+        while (it.hasNext()) {
+            try {
+                PrintWriter writer = (PrintWriter) it.next();
+                writer.println("dialog stopped");
+                writer.flush();
+            } catch (Exception ex) { ex.printStackTrace(); }
+        }
     }
 }
