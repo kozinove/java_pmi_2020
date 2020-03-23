@@ -44,9 +44,8 @@ class myClient {
         try {
 
             word = in.readLine();
-            System.out.println("Client" + index + ": " + word + "\n");
-            out.write("Client_" + index + ": " + word + "\n");
-            out.flush();
+            System.out.println("Client_" + index + ": " + word + "\n");
+
         } catch (IOException ex) {
             Logger.getLogger(myClient.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -71,8 +70,10 @@ public class Server {
                 Socket client = server.accept();
                 try {
                     clients.add(new myClient(client, id++));
-
+                     
+            
                     System.out.println("Client_" + clients.size() +": I am here" );
+                    
                 } catch (IOException e) {
                     client.close();
                 }
@@ -82,25 +83,36 @@ public class Server {
             String word = "";
             boolean first = true;
             boolean second = true;
-            while (first || second) {
+            
+            clients.get(0).out.write("Start chat\n");
+            clients.get(0).out.flush();  
+           
+            while (first && second) {
 
                 if (first) {
                     word = clients.get(0).Message();
+                    clients.get(1).out.write( word + "\n");
+                    clients.get(1).out.flush(); 
                     if ("q".equals(word)) {
                         System.out.println("Client_1 - EXIT");
                         clients.get(0).Close();
                         first = false;
 
                     }
+
                 }
 
                 if (second) {
                     word = clients.get(1).Message();
+                    clients.get(0).out.write( word + "\n");
+                    clients.get(0).out.flush(); 
                     if ("q".equals(word)) {
                         System.out.println("Client_2 - EXIT");
                         clients.get(1).Close();
                         second = false;
                     }
+                    
+                    
                 }
             }
             

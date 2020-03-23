@@ -28,11 +28,19 @@ public class Client {
 
             out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
             String word = "";
-            while (!"q".equals(word)) {
+            String answer = "";
+            while (!"q".equals(word) && !"q".equals(answer) ) {
+                
+                answer = in.readLine();
+                System.out.println(answer);
+                
+                if(!"q".equals(answer)){
+                
                 System.out.println("Write something: ");
                 word = reader.readLine();
                 out.write(word + "\n");
                 out.flush();
+                }
                
             }
 
