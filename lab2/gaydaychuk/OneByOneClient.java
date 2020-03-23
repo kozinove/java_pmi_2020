@@ -7,37 +7,33 @@ import java.awt.event.*;
 
 public class OneByOneClient
 {
-    JTextArea incoming;
-    JTextField outgoing;
+    boolean isFirst = false;
     BufferedReader reader;
+    BufferedReader consoleReader;
+
     PrintWriter writer;
     Socket sock;
     
     public void go() {
-        JFrame frame = new JFrame("One by one chat");
-        JPanel mainPanel = new JPanel();
-        incoming = new JTextArea(20, 50);
-        incoming.setLineWrap(true);
-        incoming.setWrapStyleWord(true);
-        incoming.setEditable(false);
-        JScrollPane qScroller = new JScrollPane(incoming);
-        qScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        qScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        outgoing = new JTextField(20);
-        JButton sendButton = new JButton("Send");
-        sendButton.addActionListener(new SendButtonListener());
-        mainPanel.add(qScroller);
-        mainPanel.add(outgoing);
-        mainPanel.add(sendButton);
-        frame.getContentPane().add(BorderLayout.CENTER, mainPanel);
         connect();
-        frame.setSize(650, 500);
-        frame.setVisible(true);
         String message;
+        String input;
         try {
-            while ((message = reader.readLine()) != null) {
-                System.out.println("client read " + message);
-                incoming.append(message + "\n");
+            while(true){
+                if(isFirst){
+                    input = consoleReader.readLine();
+                    writer.println(input);
+                    writer.flush();
+                    isFirst = false;
+                }
+                else{
+                    while (
+                        (message = reader.readLine()) != null) {
+                        System.out.println(message);
+                        isFirst = true;
+                        break;
+                    }
+                }
             }
         } catch (IOException ex)
         {
@@ -50,27 +46,18 @@ public class OneByOneClient
             sock = new Socket("127.0.0.1", 5000);
             InputStreamReader streamReader = new InputStreamReader(sock.getInputStream());
             reader = new BufferedReader(streamReader);
+            consoleReader = new BufferedReader(new InputStreamReader(System.in));
             writer = new PrintWriter(sock.getOutputStream());
-            System.out.println("networking established");
+            System.out.println("waiting for connection...\n");
+            String initStatus = reader.readLine();
+            if(initStatus.equals("first")){
+                isFirst = true;
+            }
+            System.out.println("networking established,\n you " + (isFirst ? "can write smth" : "must wait your peer"));
         }
         catch(IOException ex)
         {
             ex.printStackTrace();
-        }
-    }
-    
-    public class SendButtonListener implements ActionListener {
-        public void actionPerformed(ActionEvent ev) {
-            try {
-                writer.println(outgoing.getText());
-                writer.flush();
-                
-            }
-            catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            outgoing.setText("");
-            outgoing.requestFocus();
         }
     }
     

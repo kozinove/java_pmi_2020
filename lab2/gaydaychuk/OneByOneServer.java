@@ -5,6 +5,7 @@ import java.util.*;
 public class OneByOneServer
 {
     ArrayList<PrintWriter> clientOutputStreams = new ArrayList<PrintWriter>();
+    int phase = 0;
     
     public class MessageReceiver{
         BufferedReader reader1;
@@ -27,13 +28,12 @@ public class OneByOneServer
         public void doIt() {
             String message;
             try {
-                int phase = 0;
                 while(true){
                     if(phase == 0){
                         while ((message = reader1.readLine()) == null) {
                             continue;
                         }
-                        printLastMessage(message);
+                        printLastMessage("\t\t" + message);
                         phase = 1;
                     }
                     else{
@@ -44,7 +44,6 @@ public class OneByOneServer
                         phase = 0;
                     }
                 }
-
             } catch (Exception ex) { ex.printStackTrace(); }
         }
     }
@@ -58,28 +57,26 @@ public class OneByOneServer
             ServerSocket serverSock = new ServerSocket(5000);
 
             Socket clientSocket = serverSock.accept();
-            PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
-            clientOutputStreams.add(writer);
+            PrintWriter writer1 = new PrintWriter(clientSocket.getOutputStream());
+            clientOutputStreams.add(writer1);
             
             Socket clientSocket2 = serverSock.accept();
             PrintWriter writer2 = new PrintWriter(clientSocket2.getOutputStream());
             clientOutputStreams.add(writer2);
+
+            writer1.println("first");
+            writer1.flush();
+            writer2.println("second");
+            writer2.flush();
             
-            MessageReceiver ch = new MessageReceiver(clientSocket, clientSocket2);
-            ch.doIt();
-            // System.out.println("got a connection");
-            
+            MessageReceiver mr = new MessageReceiver(clientSocket, clientSocket2);
+            mr.doIt();
         } catch (Exception ex) { ex.printStackTrace(); }
     }
     
     public void printLastMessage(String message) {
-        Iterator it = clientOutputStreams.iterator();
-        while (it.hasNext()) {
-            try {
-                PrintWriter writer = (PrintWriter) it.next();
-                writer.println(message);
-                writer.flush();
-            } catch (Exception ex) { ex.printStackTrace(); }
-        }
+        PrintWriter writer = (PrintWriter)(clientOutputStreams.get((phase == 0 ? 1 : 0)));
+        writer.println(message);
+        writer.flush();
     }
 }
