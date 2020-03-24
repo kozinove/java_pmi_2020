@@ -19,8 +19,8 @@ public class Client {
     private BufferedReader serverReader;
     private BufferedReader consoleReader;
     
-    private String message;
-    private String response;
+    private String message = "";
+    private String response = "";
     
     private boolean waiting = true;
     
@@ -37,7 +37,7 @@ public class Client {
     private String receive() throws IOException {
         String r;
         r = serverReader.readLine();
-        if (r != null && r.charAt(0)!= '2') {
+        if (r != null && r.charAt(0) != '2') {
             waiting = false;            
         }
         return r;
@@ -53,20 +53,22 @@ public class Client {
     public void run() throws IOException{
         while(true) {
             try {
-                response = receive(); 
+                response = receive();
+                if(response.substring(3).equals("!exit")) {
+                    System.out.println("Other user disconnected");
+                    break;
+                }
                 System.out.println(response);
-                if(!waiting){
+                if(!waiting){        
                     message = consoleReader.readLine();
-                    System.out.println("!exit".equals(message));
-                    if("!exit".equals(message)){
-                       System.out.println("Disconnect");
-                       send("User disconnects. Press enter to exit.");
-                       break;
-                    }
                     send(message);
+                    if(message.equals("!exit")) {
+                        break;
+                    }        
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                break;
             }
         }
         writer.close();
