@@ -49,7 +49,6 @@ public class Server {
         s.send(writer2, "2. Wait for #1:" );
         
         String response = "";
-//        String answer = "";
      
         while(client1.isConnected() && client2.isConnected()){
             response = s.receive(reader1);
@@ -59,7 +58,8 @@ public class Server {
             response = s.receive(reader2);
             s.send(writer1, "#2 " + response);
         }
-        System.out.println("Users disconnect");
+        
+        System.out.println("Users disconnected");
         writer1.close();
         reader1.close();
         client1.close();
@@ -67,10 +67,6 @@ public class Server {
         reader2.close();
         client2.close();
         serv.close();
-//        clientS.getOutputStream().write("Start session".getBytes());
-        
-//        servS.close();
-        
-        
+              
     }
 }
