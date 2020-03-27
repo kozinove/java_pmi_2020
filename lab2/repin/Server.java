@@ -1,10 +1,10 @@
-import java.io.*;
+п»їimport java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-//Теги сообщений: 
+//РўРµРіРё СЃРѕРѕР±С‰РµРЅРёР№: 
 //0 = Server info
 //1 = ID
 //2 = Data
@@ -41,8 +41,8 @@ public class Server {
     private InetAddress ip;
     private ServerSocket server_socket;
     private Client[] clients = new Client[2];
-    private int turn;  // Чья очередь писать
-    private boolean alive; // Статус текущей беседы
+    private int turn;  // Р§СЊСЏ РѕС‡РµСЂРµРґСЊ РїРёСЃР°С‚СЊ
+    private boolean alive; // РЎС‚Р°С‚СѓСЃ С‚РµРєСѓС‰РµР№ Р±РµСЃРµРґС‹
 
     public void StartServer() {
         try {
@@ -50,8 +50,8 @@ public class Server {
             try {
                 server_socket = new ServerSocket(port, 0, ip);
                 System.out.println("Server started.");
-                while(true) {                                       // Цикл для сервера
-                                                                    // Ожидание пользователей и отправка сведений
+                while(true) {                                       // Р¦РёРєР» РґР»СЏ СЃРµСЂРІРµСЂР°
+                                                                    // РћР¶РёРґР°РЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ Рё РѕС‚РїСЂР°РІРєР° СЃРІРµРґРµРЅРёР№
                     clients[0] = new Client(server_socket.accept());
                     System.out.println("First user connected.");
                     clients[0].Write("0:Waiting for second user...");
@@ -60,15 +60,15 @@ public class Server {
                     System.out.println("Second user connected."); 
                     clients[0].Write("0:Both users connected.");
                     clients[1].Write("0:Both users connected.");
-                                                                    // Отправка пользователям ID
+                                                                    // РћС‚РїСЂР°РІРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏРј ID
                     clients[0].Write("1:0");
                     clients[1].Write("1:1");
                     alive = true;
                     turn = 0;
-                    while(alive) {                                  // Цикл текущей беседы
+                    while(alive) {                                  // Р¦РёРєР» С‚РµРєСѓС‰РµР№ Р±РµСЃРµРґС‹
                         String msg = clients[turn].Read();
 
-                        if(msg.equals("/q")){                       // Команда для окончания "/q"
+                        if(msg.equals("/q")){                       // РљРѕРјР°РЅРґР° РґР»СЏ РѕРєРѕРЅС‡Р°РЅРёСЏ "/q"
                             clients[0].Write("3:");
                             clients[0].Close();
                             clients[1].Write("3:");
