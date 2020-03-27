@@ -26,12 +26,8 @@ public class Client {
         out.newLine();
         out.flush();
     }
-    public String ReadServer() throws IOException {
+    public String Read() throws IOException {
         return in_server.readLine();
-    }
-
-    public String ReadConsole() throws IOException {
-        return in_console.readLine();
     }
 
     public void Close() throws IOException {
@@ -49,7 +45,7 @@ public class Client {
                 in_server = new BufferedReader(new InputStreamReader(client_socket.getInputStream()));
                 in_console = new BufferedReader(new InputStreamReader(System.in));
                 while(alive) {
-                    String msg = ReadServer();
+                    String msg = Read();
                     String tag = msg.substring(0,1);
                     msg = msg.substring(2);
                     switch (tag) {

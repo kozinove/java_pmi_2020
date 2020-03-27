@@ -41,7 +41,7 @@ public class Server {
     private InetAddress ip;
     private ServerSocket server_socket;
     private Client[] clients = new Client[2];
-    private int turn = 0;  // Чья очередь писать
+    private int turn;  // Чья очередь писать
     private boolean alive; // Статус текущей беседы
 
     public void StartServer() {
@@ -64,6 +64,7 @@ public class Server {
                     clients[0].Write("1:0");
                     clients[1].Write("1:1");
                     alive = true;
+                    turn = 0;
                     while(alive) {                                  // Цикл текущей беседы
                         String msg = clients[turn].Read();
 
