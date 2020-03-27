@@ -68,20 +68,20 @@ public class Server {
                     while(alive) {                                  // Цикл текущей беседы
                         String msg = clients[turn].Read();
 
-                        if(msg.equals("/q")){                       // Команда для окончания "/q"
-                            clients[0].Write("3:");
-                            clients[0].Close();
-                            clients[1].Write("3:");
-                            clients[1].Close();
-                            System.out.println("Conversation ended.");
-                            alive = false;
-                        } else {
+                        if(!msg.equals("/q")){                       // Команда для окончания "/q"
                             if(turn == 0) {
                                 turn = 1;
                             } else {
                                 turn = 0;
                             }
                             clients[turn].Write("2:" + msg);
+                        } else {
+                            clients[0].Write("3:");
+                            clients[0].Close();
+                            clients[1].Write("3:");
+                            clients[1].Close();
+                            System.out.println("Conversation ended.");
+                            alive = false;
                         }
                     }  
                 }
