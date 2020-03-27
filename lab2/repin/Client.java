@@ -19,7 +19,6 @@ public class Client {
     private BufferedReader in_console;
     boolean active;
     private boolean alive = true;
-    String ID;
 
     public void Write(String msg) throws IOException {
         out.write(msg);
@@ -53,7 +52,6 @@ public class Client {
                             System.out.println(msg); 
                             break;
                         case "1": 
-                            ID = msg;
                             if(msg.equals("0")) {
                                 active = true;
                                 System.out.println("You speak first.");
