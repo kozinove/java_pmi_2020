@@ -55,9 +55,7 @@ public class client_by_zolotareva {
                 
                 out.flush();
                 
-                client.close();
-                in.close();
-                out.close();
+                hread.sleep(1000);
                 }  
             }         
        
