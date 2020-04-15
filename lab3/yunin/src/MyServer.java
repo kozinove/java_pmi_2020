@@ -7,7 +7,6 @@ public class MyServer {
     ArrayList<ClientThread> clients = new ArrayList<>();
     int yes_counter = 0;
     int no_counter = 0;
-    boolean is_voting = false;
 
     public void bcast(String s) {
         for(ClientThread client : clients) {
