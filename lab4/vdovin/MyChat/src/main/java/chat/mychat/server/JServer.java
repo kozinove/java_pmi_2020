@@ -26,6 +26,7 @@ public class JServer {
     
     int voteYes = 0;
     int voteNo = 0;
+    int voteAbstain = 0;
     
     public void bcast (String message) {
         for (ClientThread client : allClients) {
@@ -39,14 +40,18 @@ public class JServer {
 
         if(s.equals("no"))
             voteNo++;
+        
+        if(s.equals("abstain"))
+            voteAbstain++;
 
-        return (voteYes + voteNo) == allClients.size();
+        return (voteYes + voteNo + voteAbstain) == allClients.size();
     }
 
     synchronized public String resultVote() {
-        String res = "Yes - " + Integer.toString(voteYes) + "; no - " + Integer.toString(voteNo);
+        String res = "Yes - " + Integer.toString(voteYes) + "; no - " + Integer.toString(voteNo) + "; abstain - " + Integer.toString(voteAbstain);
         voteYes = 0;
         voteNo = 0;
+        voteAbstain = 0;
         return res;
     }
     
