@@ -20,27 +20,28 @@ import com.google.gson.GsonBuilder;
 
 class myClient extends Thread {
 
-    
     private static Gson gson;
 
-    int index;
+    int id;
     Socket socket;
     BufferedReader in;
     BufferedWriter out;
-    Message m;
+    Message from_to_me;
 
+    boolean i_voted = false;
+    private static boolean voting = false;
     boolean itsme = false;
-    boolean vote = false;
+     
     private static int yes = 0;
     private static int no = 0;
     private static boolean flag = false;
     private static int count = 0;
 
-    public myClient(Socket socket, int id) throws IOException {
+    public myClient(Socket socket, int index) throws IOException {
         this.socket = socket;
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        index = id + 1;
+        this.id = index + 1;
         count++;
         gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -48,39 +49,83 @@ class myClient extends Thread {
     }
 
     public void run() {
-     
 
         try {
 
             while (true) {
-               String word = "";
-               int ch;
-            long i = 0;
-            
-            while((ch = in.read()) >= 0)  
-            {
-             char c = (char) ch;
-             
-                word+=c;
-                if (c == '}')
+                String word = "";
+                int ch;
+                long i = 0;
+
+                while ((ch = in.read()) >= 0) {
+                    char c = (char) ch;
+
+                    word += c;
+                    if (c == '}') {
                         break;
-                
-            }
-                   System.out.print(word);
-                   
-                 
-                   
+                    }
+
+                }
+                System.out.print(word);
 
                 for (myClient mc : Server.clients) {
 
-                    if (mc != this) {
-                        
-                        mc.Send(word);
-                        
+                  if(mc != this)
 
-                    }
+                        mc.Send(word);
+
+                    
                 }
- 
+  
+                  from_to_me = gson.fromJson(word, Message.class);
+                  
+                  
+                  if(from_to_me.question && !voting) {
+                      voting = true;
+                       itsme = true;
+                      
+                  }
+                  
+                  
+                  if(from_to_me.question || voting) {
+                     if (  !itsme &&  !i_voted) {
+                         
+                        if (from_to_me.message.equals("y")) {
+                            yes++;
+                            i_voted = true;
+                        } else {
+                            no++;
+                            i_voted = true;
+                        }
+                    }
+                     
+                     if (itsme) {
+
+                        if (yes + no == count-1) {
+
+                            for (myClient mc : Server.clients) {
+                                word = "Results Yes: " + yes + " No: " + no;
+                                from_to_me.message = word;
+                                word = gson.toJson(from_to_me);
+                                mc.Send(word);
+                                
+                            }
+
+                            yes = 0;
+                            no = 0;
+                            voting = false;
+                            itsme = false;
+                            for (myClient mc : Server.clients) {
+                                mc.i_voted = false;
+                            }
+
+                        }
+                    }
+                     
+                      
+                  }
+         
+                  
             }
 
         } catch (IOException e) {
@@ -117,14 +162,14 @@ public class Server {
         try {
             server = new ServerSocket(4004);
             System.out.println("Server: Hello, I am server");
-            Integer id = 0;
+            Integer index = 0;
             while (true) {
 
                 Socket client = server.accept();
 
                 try {
 
-                    clients.add(new myClient(client, id++));
+                    clients.add(new myClient(client, index++));
 
                     System.out.println("Client_" + clients.size() + ": I am here");
 

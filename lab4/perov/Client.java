@@ -18,26 +18,32 @@ import com.google.gson.GsonBuilder;
 
 class Message {
 
-    String str;
+    String message;
     String id;
+    boolean question;
 
     void Set(String my_id, String my_str) {
         id = my_id;
-        str = my_str;
+        message = my_str;
+        
+        if(message.contains("?"))
+            question = true;
+        else question = false;
+        
     }
 
     Message(String my_id, String my_str) {
         id = my_id;
-        str = my_str;
+        message = my_str;
     }
 }
 
 public class Client {
 
     private static Gson gson;
-    private static Message m;
-    private static Message me;
-    private static String name;
+    private static Message from_me;
+    private static Message to_me;
+    private static String id;
 
     private static Socket client;
     private static BufferedReader reader;
@@ -49,36 +55,36 @@ public class Client {
         public Read() {
             start();
         }
-
-        ;
-     
+ 
     public void run() {
 
-          
             try {
-   
+
                 while (true) {
                     String answer = "";
+
+                    int ch;
+                    long i = 0;
+
+                    while ((ch = in.read()) >= 0) {
+                        char c = (char) ch;
+
+                        answer += c;
+                        if (c == '}') {
+                            break;
+                        }
+
+                    }
                     
-                        int ch;
-            long i = 0;
-            
-            while((ch = in.read()) >= 0) 
-            {
-             char c = (char) ch;
-             
-                answer+=c;
-                if (c == '}')
-                        break;
-                
-            }
+                    to_me = gson.fromJson(answer, Message.class);
                     
+                    if (to_me.question) {
+                        System.out.println("Answer[y/n]: ");
+                    }
                     
                     System.out.println(answer);
-                    me = gson.fromJson(answer, Message.class);
-                    
-                    
-                    
+                   
+
                 }
             } catch (IOException e) {
 
@@ -92,19 +98,18 @@ public class Client {
             start();
         }
 
-        ;
     public void run() {
             while (true) {
                 String word;
                 try {
                     word = reader.readLine();
 
-                        m.Set(name, word);
+                    from_me.Set(id, word);
 
-                        String obj = gson.toJson(m);
+                    String obj = gson.toJson(from_me);
 
-                        out.write(obj);
-                    
+                    out.write(obj);
+
                     out.flush();
                 } catch (IOException e) {
 
@@ -121,17 +126,16 @@ public class Client {
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
             out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-            
+
             gson = new GsonBuilder().setPrettyPrinting().create();
-            Integer id = (int) (Math.random() * 50);
-            name = id.toString();
-            m = new Message(name, "Null");
-            me = new Message(name, "Null");
-            
-           
+            Integer index = (int) (Math.random() * 500);
+            Client.id = index.toString();
+            from_me = new Message(Client.id, "Null");
+            to_me = new Message(Client.id, "Null");
+
             Write w = new Write();
             Read r = new Read();
-            
+
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
