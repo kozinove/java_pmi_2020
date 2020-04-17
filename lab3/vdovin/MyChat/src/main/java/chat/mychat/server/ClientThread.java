@@ -50,7 +50,7 @@ public class ClientThread extends Thread {
             while(true) {
                 String message = dis.readUTF();
                
-                if (message.equals("!yes!") || message.equals("!no!")) {
+                if (message.equals("!yes!") || message.equals("!no!") || message.equals("!abstain!")) {
                     boolean res = server.vote(message);
                     if (res) {
                         server.bcast(server.resultVote());
