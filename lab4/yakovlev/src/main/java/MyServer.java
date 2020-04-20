@@ -44,11 +44,11 @@ ServerSocket ss;
         isVoting = false;
     }
     
-    public void sendAll(String message) throws IOException
+    public void sendAll(String message, int id) throws IOException
     {
         for (int i = 0; i < clients.size(); i++)
         {
-            clients.get(i).send(message);
+            clients.get(i).send(message, id);
         }
     }
     

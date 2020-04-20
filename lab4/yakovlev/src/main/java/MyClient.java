@@ -32,10 +32,12 @@ public class MyClient {
     DataOutputStream dos;
     int port;
     boolean isVoting;
+    int id;
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     
     public MyClient(int _port){
         port = _port;
+        id = -1;
     }
     
     public boolean isVoting()
@@ -52,6 +54,11 @@ public class MyClient {
         dis = new DataInputStream(is);
         dos = new DataOutputStream(os);
         
+        String idMessage = dis.readUTF();
+        idMessage = gson.fromJson(idMessage, Letter.class).message;
+        System.out.println("id: " + idMessage);
+        id = Integer.parseInt(idMessage);
+        
         new Thread(() -> { 
             
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -66,11 +73,11 @@ public class MyClient {
                 } catch (IOException ex) {
                     Logger.getLogger(MyClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                System.out.println(ltr.message);
-                if (ltr.message.contains("Start_vote"))
+                if (ltr.id != id) System.out.println(ltr.message);
+                if (ltr.startVote())
                 {
                     try {
-                        dos.writeUTF(gson.toJson(new Letter()));
+                        dos.writeUTF(gson.toJson(new Letter("",id)));
                         dos.flush();
                     } catch (IOException ex) {
                         Logger.getLogger(MyClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -81,32 +88,28 @@ public class MyClient {
             }
             
         }).start();
-        
-        
-        
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); 
         while (true)
         {
             String line = "";
             Letter ltr = new Letter();
+            ltr.id = id;
 
             line = reader.readLine();
             if (isVoting)
             {
                 while(isVoting)
                 {
-                    String line2 = "";
-                    if ( line.contains("yes") || line.contains("no"))
+                    ltr.message = line;
+                    if ( ltr.thisIsAnswer())
                     {
-                        ltr.message = line;
                         dos.writeUTF(gson.toJson(ltr));
                         dos.flush();
                         isVoting = false;
                     }
                     else
                     {
-                        ltr.message = line;
                         dos.writeUTF(gson.toJson(ltr));
                         dos.flush();
                         line = reader.readLine();
@@ -116,9 +119,11 @@ public class MyClient {
             else
             {
                 ltr.message = line;
-                System.out.println(ltr.message);
+                //ltr.id = id;
+                //System.out.println(ltr.message);
                 dos.writeUTF(gson.toJson(ltr));
                 dos.flush();
+                //ltr.id = -1;
             }
         }
     }

@@ -42,28 +42,31 @@ public class ThreadClient extends Thread {
         os = cs.getOutputStream();
         dis = new DataInputStream(is);
         dos = new DataOutputStream(os);
+        System.out.println("id: "+ id);
+        send(Integer.toString(id),id);
         start();
     }
     
-    public void send(String message) throws IOException
+    public void send(String message, int id) throws IOException
     {
         Letter ltr = new Letter();
         ltr.message = message;
+        ltr.id = id;
         dos.writeUTF(gson.toJson(ltr));
         dos.flush();
     }
     
-    public String recv() throws IOException
+    public Letter recv() throws IOException
     {
         Letter ltr = new Letter();
         String message = dis.readUTF();
         ltr = gson.fromJson(message, Letter.class);
-        System.out.println("Client sent me: "+ ltr.message);
-        return ltr.message;
+        System.out.println("Client" + ltr.id +" sent me: "+ ltr.message);
+        return ltr;
     }
     
     public void run() {
-        String recvBuf = "";
+        Letter recvBuf = new Letter();
         while(true)
         {
             try {
@@ -71,20 +74,18 @@ public class ThreadClient extends Thread {
                         } catch (IOException ex) {
                 Logger.getLogger(ThreadClient.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (recvBuf.contains("Start_vote"))
+            if (recvBuf.startVote())
             {
                 ser.isVoting = true;
                 try {
-                    ser.sendAll("Start_vote");
+                    ser.sendAll("Start_vote", recvBuf.id);
                 } catch (IOException ex) {
                     Logger.getLogger(ThreadClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             if ( ser.isVoting)
             {
-                String answer = "";
-
-                
+                Letter answer = new Letter();
                 while(true)
                 {
                     try {
@@ -92,12 +93,12 @@ public class ThreadClient extends Thread {
                     } catch (IOException ex) {
                         Logger.getLogger(ThreadClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    if (answer.contains("yes"))
+                    if (answer.positive())
                     {
                         ser.yes++;
                         break;
                     }
-                    else if (answer.contains("no"))
+                    else if (answer.negative())
                     {
                         ser.no++;
                         break;
@@ -105,7 +106,7 @@ public class ThreadClient extends Thread {
                     else
                     {
                         try {
-                            ser.sendAll(answer);
+                            ser.sendAll(answer.message,answer.id);
                         } catch (IOException ex) {
                             Logger.getLogger(ThreadClient.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -116,7 +117,7 @@ public class ThreadClient extends Thread {
             else
             {
                 try {
-                    ser.sendAll(recvBuf);
+                    ser.sendAll(recvBuf.message,recvBuf.id);
                 } catch (IOException ex) {
                     Logger.getLogger(ThreadClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -124,7 +125,7 @@ public class ThreadClient extends Thread {
             if (ser.isAllVote())
             {
                 try {
-                    ser.sendAll("END OF VOITING\ncount YES = " + ser.yes + "\ncount NO = " + ser.no);
+                    ser.sendAll("END OF VOITING\ncount YES = " + ser.yes + "\ncount NO = " + ser.no, -1);
                 } catch (IOException ex) {
                     Logger.getLogger(ThreadClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
