@@ -57,6 +57,12 @@ public class MainServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (m.getInitListRequest().equals("true")){
+            String initList = pm.getPrevious();
+            int id = all_clients.indexOf(sender);
+            all_clients.get(id).send(initList);
+            return;
+        }
         if (m.getTargetMark().equals("true")){
             int id = Integer.parseInt(m.getTargetId());
             all_clients.get(id).send(m.getText());

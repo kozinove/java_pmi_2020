@@ -8,6 +8,7 @@ public class Message {
     private String targetMark;  // bool
     private String voteMark;  // bool
     private String poleMark;  // bool
+    private String initListRequest;  // bool
 
     public String getText() {
         return text;
@@ -18,6 +19,7 @@ public class Message {
     }
 
     public Message() {
+        this.initListRequest = "false";
         this.targetMark = "false";
         this.voteMark = "false";
         this.poleMark = "false";
@@ -54,6 +56,13 @@ public class Message {
 
     public void setPoleMark(String poleMark) {
         this.poleMark = poleMark;
+    }
+    public String getInitListRequest() {
+        return initListRequest;
+    }
+
+    public void setInitListRequest(String initListRequest) {
+        this.initListRequest = initListRequest;
     }
 
 }

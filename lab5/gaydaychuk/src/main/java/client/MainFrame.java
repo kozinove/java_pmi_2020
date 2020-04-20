@@ -1,6 +1,5 @@
 package client;
 
-import DB.Model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import shared.Message;
@@ -29,10 +28,10 @@ public class MainFrame {
     public MainFrame() {
         Connect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                showPrevious();
                 if (cst == null) {
                     cst = new ClientServerThread(MainFrame.this);
                 }
+                showPrevious();
             }
         });
         Send.addActionListener(new ActionListener() {
@@ -130,12 +129,19 @@ public class MainFrame {
     }
 
     public void showPrevious(){
-        String str = "";
-        Model m = new Model();
-        for(DB.Message mes : m.getList()){
-            str = mes.toString() + "\n" + str;
+        ObjectMapper mapper = new ObjectMapper();
+        Message m = new Message();
+        m.setInitListRequest("true");
+        String stringToSend = "default";
+        try {
+            stringToSend = mapper.writeValueAsString(m);
+        } catch (JsonProcessingException e1) {
+            e1.printStackTrace();
         }
-        textArea1.setText(str);
+        if (cst != null) {
+            cst.send(stringToSend);
+        }
+
     }
 
     public static void main(String[] args) {

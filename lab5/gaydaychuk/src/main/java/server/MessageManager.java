@@ -13,6 +13,13 @@ public class MessageManager {
     boolean isPole = false;
     int mustToVote = 0;
     int votersCount;
+    Model model;
+
+
+    public MessageManager() {
+        model = new Model();
+    }
+
     String getString(String s, ClientThread sender, ArrayList<ClientThread> all_clients){
         ObjectMapper mapper = new ObjectMapper();
         Message m = new Message();
@@ -51,7 +58,7 @@ public class MessageManager {
             }
         }
 
-        Model model = new Model();
+
         model.add(new DB.Message(Integer.toString(getIndex(sender, all_clients)), m.getText()));
 
         return "sender " + Integer.toString(getIndex(sender, all_clients)) + ": " + m.getText();
@@ -64,5 +71,14 @@ public class MessageManager {
             }
         }
         return c;
+    }
+
+    public String getPrevious(){
+        String str = "";
+        Model m = new Model();
+        for(DB.Message mes : m.getList()){
+            str = mes.toString() + "\n" + str;
+        }
+        return str;
     }
 }
