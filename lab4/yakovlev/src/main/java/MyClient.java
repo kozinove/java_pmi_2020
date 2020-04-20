@@ -55,7 +55,7 @@ public class MyClient {
         dos = new DataOutputStream(os);
         
         String idMessage = dis.readUTF();
-        idMessage = gson.fromJson(idMessage, Letter.class).message;
+        idMessage = gson.fromJson(idMessage, Letter.class).getMes();
         System.out.println("id: " + idMessage);
         id = Integer.parseInt(idMessage);
         
@@ -73,7 +73,7 @@ public class MyClient {
                 } catch (IOException ex) {
                     Logger.getLogger(MyClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                if (ltr.id != id) System.out.println(ltr.message);
+                if (ltr.id != id) System.out.println(ltr.getMes());
                 if (ltr.startVote())
                 {
                     try {
@@ -101,8 +101,8 @@ public class MyClient {
             {
                 while(isVoting)
                 {
-                    ltr.message = line;
-                    if ( ltr.thisIsAnswer())
+                    ltr.setMes(line);
+                    if ( ltr.answer > -1)
                     {
                         dos.writeUTF(gson.toJson(ltr));
                         dos.flush();
@@ -118,12 +118,9 @@ public class MyClient {
             }
             else
             {
-                ltr.message = line;
-                //ltr.id = id;
-                //System.out.println(ltr.message);
+                ltr.setMes(line);
                 dos.writeUTF(gson.toJson(ltr));
                 dos.flush();
-                //ltr.id = -1;
             }
         }
     }

@@ -50,7 +50,7 @@ public class ThreadClient extends Thread {
     public void send(String message, int id) throws IOException
     {
         Letter ltr = new Letter();
-        ltr.message = message;
+        ltr.setMes(message);
         ltr.id = id;
         dos.writeUTF(gson.toJson(ltr));
         dos.flush();
@@ -61,7 +61,7 @@ public class ThreadClient extends Thread {
         Letter ltr = new Letter();
         String message = dis.readUTF();
         ltr = gson.fromJson(message, Letter.class);
-        System.out.println("Client" + ltr.id +" sent me: "+ ltr.message);
+        System.out.println("Client" + ltr.id +" sent me: "+ ltr.getMes());
         return ltr;
     }
     
@@ -93,12 +93,12 @@ public class ThreadClient extends Thread {
                     } catch (IOException ex) {
                         Logger.getLogger(ThreadClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    if (answer.positive())
+                    if (answer.answer == 1)
                     {
                         ser.yes++;
                         break;
                     }
-                    else if (answer.negative())
+                    else if (answer.answer == 0)
                     {
                         ser.no++;
                         break;
@@ -106,7 +106,7 @@ public class ThreadClient extends Thread {
                     else
                     {
                         try {
-                            ser.sendAll(answer.message,answer.id);
+                            ser.sendAll(answer.getMes(),answer.id);
                         } catch (IOException ex) {
                             Logger.getLogger(ThreadClient.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -117,7 +117,7 @@ public class ThreadClient extends Thread {
             else
             {
                 try {
-                    ser.sendAll(recvBuf.message,recvBuf.id);
+                    ser.sendAll(recvBuf.getMes(),recvBuf.id);
                 } catch (IOException ex) {
                     Logger.getLogger(ThreadClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
