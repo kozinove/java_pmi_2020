@@ -32,8 +32,6 @@ public class ClientServerThread extends Thread{
     boolean voted = false;
     
     int port = 3124;
-    String id;
-    
     InetAddress ip = null;
     DataInputStream dis;
     DataOutputStream dos;

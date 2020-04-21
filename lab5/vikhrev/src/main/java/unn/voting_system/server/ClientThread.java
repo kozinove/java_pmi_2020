@@ -34,11 +34,11 @@ public class ClientThread extends Thread {
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String last_messages = "";
     
-    public ClientThread(Socket cs, Server sv, Data_base db, int id) {
+    public ClientThread(Socket cs, Server sv, Data_base db, int i) {
         this.cs = cs;
         this.sv = sv;
         this.db = db;
-        this.id = id;
+        this.id = i;
         
         try {
             dos = new  DataOutputStream(cs.getOutputStream());
