@@ -109,10 +109,20 @@ class myClient extends Thread {
     public void run() {
 
         try {
+            
+            if (story.size() <= 5){
             for (String msg : story) {
                 this.Send(msg);
             }
-
+            } else {
+                for(int i = 5; i > 0; i--){
+                    this.Send(story.get(story.size()-i));
+                }
+                
+            }
+            
+            
+            
             while (true) {
                 String word = "";
                 int ch;
