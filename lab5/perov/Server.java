@@ -67,7 +67,7 @@ class myClient extends Thread {
 
         try {
             Statement stmt = c.createStatement();
-            ResultSet r = stmt.executeQuery("select * from Chat");
+            ResultSet r = stmt.executeQuery("SELECT * FROM Chat ORDER BY id DESC LIMIT 5");
             while (r.next()) {
                 story.add(r.getString("Message"));
                 System.out.println(r.getString("Message"));
@@ -109,7 +109,14 @@ class myClient extends Thread {
     public void run() {
 
         try {
-            
+            /*
+            for (String msg : story) {
+                this.Send(msg);
+            }
+            */
+           for (int i = story.size() - 1; i >= 0; i--)
+               this.Send(story.get(i));
+            /*
             if (story.size() <= 5){
             for (String msg : story) {
                 this.Send(msg);
@@ -120,7 +127,7 @@ class myClient extends Thread {
                 }
                 
             }
-            
+            */
             
             
             while (true) {
