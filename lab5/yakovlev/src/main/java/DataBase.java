@@ -44,7 +44,8 @@ public class DataBase {
     
     void UpdateHistory(String mes) throws SQLException
     {
-        PreparedStatement statem = connection.prepareStatement("INSERT INTO messagehistory (letter) VALUES (\""+mes+"\")");
+        PreparedStatement statem = connection.prepareStatement("INSERT INTO messagehistory (letter) VALUES (?);");
+        statem.setString(1, mes);
         statem.executeUpdate();
     }
 }
