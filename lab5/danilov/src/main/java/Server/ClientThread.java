@@ -36,7 +36,6 @@ public class ClientThread extends Thread{
         }
 
 
-        // create the string with 10 last messages and if not empty send it
         String mssgs = this.db.getMessages();
         if(!mssgs.equals("")) {
             this.send(new MyMessage("history", mssgs));

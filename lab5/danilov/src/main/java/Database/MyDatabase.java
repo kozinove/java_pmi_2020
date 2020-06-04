@@ -62,9 +62,8 @@ public class MyDatabase {
     public String getMessages() {
         String messages = "";
         try {
-            // take 10 last messages in database
             Statement stm = con.createStatement();
-            ResultSet res = stm.executeQuery("SELECT * FROM (SELECT * FROM messages ORDER BY id DESC LIMIT 10) ORDER BY id ASC");
+            ResultSet res = stm.executeQuery("SELECT * FROM (SELECT * FROM messages ORDER BY id DESC) ORDER BY id ASC");
             while (res.next()) {
                 // add messages to string
                 messages += "[" + res.getString("nickname") + "]: ";
